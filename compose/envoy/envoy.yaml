@@ -23,10 +23,35 @@ static_resources:
                           route:
                             cluster: service
                 http_filters:
+                  - name: envoy.filters.http.jwt_authn
+                    typed_config:
+                      "@type": type.googleapis.com/envoy.config.filter.http.jwt_authn.v2alpha.JwtAuthentication
+                      providers:
+                        keycloak:
+                          issuer: http://keycloak.localhost/auth/realms/applications
+                          audiences:
+                            - httpbin
+                          remote_jwks:
+                            http_uri:
+                              uri: http://keycloak.localhost/auth/realms/applications/protocol/openid-connect/certs
+                              cluster: keycloak_cluster
+                              timeout: 0.5s
+                            cache_duration:
+                              seconds: 300
+                          payload_in_metadata: verified_jwt
+                      rules:
+                        - match:
+                            prefix: /
+                          requires:
+                            provider_and_audiences:
+                              provider_name: keycloak
+                              audiences: httpbin
                   - name: envoy.ext_authz
                     typed_config:
                       "@type": type.googleapis.com/envoy.config.filter.http.ext_authz.v2.ExtAuthz
                       failure_mode_allow: false
+                      metadata_context_namespaces:
+                        - envoy.filters.http.jwt_authn
                       grpc_service:
                         google_grpc:
                           target_uri: opa:9191
@@ -43,6 +68,18 @@ static_resources:
         socket_address:
           address: httpbin
           port_value: 80
+    - name: keycloak_cluster
+      connect_timeout: 0.25s
+      type: strict_dns
+      load_assignment:
+        cluster_name: keycloak_cluster
+        endpoints:
+        - lb_endpoints:
+          - endpoint:
+              address:
+                socket_address:
+                  address: keycloak.localhost
+                  port_value: 80
 
 admin:
   access_log_path: "/dev/null"

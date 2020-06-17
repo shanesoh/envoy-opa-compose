@@ -21,16 +21,12 @@ echo "$token" | jq -R 'split(".") | .[1] | @base64d | fromjson'
 
 echo "Trying the happy case - request is handled correctly"
 
-curl -H "Authorization: Bearer $token" -H 'X-Auth-User: user0' -X GET -s -o /dev/null -w "%{http_code}\n" http://httpbin.localhost/
+curl -H "Authorization: Bearer $token" -X GET -s http://httpbin.localhost/get
 
-echo "No access token - 403"
+echo "No access token - 401"
 
-curl -H 'X-Auth-User: user0' -X GET -s -o /dev/null -w "%{http_code}\n" http://httpbin.localhost/
+curl -X GET -s -o /dev/null -w "%{http_code}\n" http://httpbin.localhost/
 
-echo "Spoofed user - 403"
+echo "Expired token/token for different audience - 401"
 
-curl -H "Authorization: Bearer $token" -H 'X-Auth-User: malicious' -X GET -s -o /dev/null -w "%{http_code}\n" http://httpbin.localhost/
-
-echo "Expired token - 403"
-
-curl -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICIxM28yajc1VlRPUU5rWUhEcWxIUEltYjVaQ21IbFp4bzZaTzJNOXMyTl9VIn0.eyJleHAiOjE1OTExNTkwMDEsImlhdCI6MTU5MTE1ODcwMSwiYXV0aF90aW1lIjoxNTkxMTU4NzAxLCJqdGkiOiJlY2U2ZDViMi04MWVmLTQxZWYtODc4OS04ZDE0ZDNiMjg5NjEiLCJpc3MiOiJodHRwczovL2tleWNsb2FrLmxvY2FsaG9zdC9hdXRoL3JlYWxtcy9hcHBsaWNhdGlvbnMiLCJhdWQiOiJmb28iLCJzdWIiOiI0YzBkNDU1ZC00YmZlLTQyZjItYTlkNC02MDJiNDk0Y2NjYzAiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJmb28iLCJzZXNzaW9uX3N0YXRlIjoiZGJiZDhkNDgtMGIzZC00ZTZkLWIzZDQtMjI5Yjc0Y2RlZTQ2IiwiYWNyIjoiMSIsInNjb3BlIjoib3BlbmlkIGZvbyBwcm9maWxlIGVtYWlsIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJuYW1lIjoiVXNlciBaZXJvIiwicHJlZmVycmVkX3VzZXJuYW1lIjoidXNlcjAiLCJnaXZlbl9uYW1lIjoiVXNlciIsImZhbWlseV9uYW1lIjoiWmVybyIsImVtYWlsIjoidXNlcjBAbWFpbC5jb20ifQ.fsKy6fTCifKsOnznQHJEGWd2aY3TbKbiwrbOEV4bwevPkt_ths7kS3sWPbGCi9hphZQ9zup_wJYKudwpluyoDk5YIbBrwPUpu4P6Ocist5-oGvlAbUhVyIy8Ylh2gs3hLLnUPYdg0Cj19c467Yw1fiX7kdYFumr9AOB0arlvzsdYKNewls6-AZqTvICmhXWplHcu8DQRtinSf6vTnCLcqesc_PB-udWYmednT5CxZxcYQkWfVvyAN7EQa22dUXLTHfOKwF2csIsTBrn21xvVbBcTfbDZDfCR3UXrZ2AQLYPxkaUAxslW9zbyenQhSMeQhTZFfIUjp8ipS7AroEmviw" -H 'X-Auth-User: user0' -X GET -s -o /dev/null -w "%{http_code}\n" http://httpbin.localhost/
+curl -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICIxM28yajc1VlRPUU5rWUhEcWxIUEltYjVaQ21IbFp4bzZaTzJNOXMyTl9VIn0.eyJleHAiOjE1OTExNTkwMDEsImlhdCI6MTU5MTE1ODcwMSwiYXV0aF90aW1lIjoxNTkxMTU4NzAxLCJqdGkiOiJlY2U2ZDViMi04MWVmLTQxZWYtODc4OS04ZDE0ZDNiMjg5NjEiLCJpc3MiOiJodHRwczovL2tleWNsb2FrLmxvY2FsaG9zdC9hdXRoL3JlYWxtcy9hcHBsaWNhdGlvbnMiLCJhdWQiOiJmb28iLCJzdWIiOiI0YzBkNDU1ZC00YmZlLTQyZjItYTlkNC02MDJiNDk0Y2NjYzAiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJmb28iLCJzZXNzaW9uX3N0YXRlIjoiZGJiZDhkNDgtMGIzZC00ZTZkLWIzZDQtMjI5Yjc0Y2RlZTQ2IiwiYWNyIjoiMSIsInNjb3BlIjoib3BlbmlkIGZvbyBwcm9maWxlIGVtYWlsIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJuYW1lIjoiVXNlciBaZXJvIiwicHJlZmVycmVkX3VzZXJuYW1lIjoidXNlcjAiLCJnaXZlbl9uYW1lIjoiVXNlciIsImZhbWlseV9uYW1lIjoiWmVybyIsImVtYWlsIjoidXNlcjBAbWFpbC5jb20ifQ.fsKy6fTCifKsOnznQHJEGWd2aY3TbKbiwrbOEV4bwevPkt_ths7kS3sWPbGCi9hphZQ9zup_wJYKudwpluyoDk5YIbBrwPUpu4P6Ocist5-oGvlAbUhVyIy8Ylh2gs3hLLnUPYdg0Cj19c467Yw1fiX7kdYFumr9AOB0arlvzsdYKNewls6-AZqTvICmhXWplHcu8DQRtinSf6vTnCLcqesc_PB-udWYmednT5CxZxcYQkWfVvyAN7EQa22dUXLTHfOKwF2csIsTBrn21xvVbBcTfbDZDfCR3UXrZ2AQLYPxkaUAxslW9zbyenQhSMeQhTZFfIUjp8ipS7AroEmviw" -X GET -s -o /dev/null -w "%{http_code}\n" http://httpbin.localhost/
