@@ -1,0 +1,10 @@
+http://keycloak.localhost {
+    reverse_proxy http://keycloak:8080 {
+        header_up X-Forwarded-Proto {http.request.scheme}
+        header_up X-Forwarded-For {http.request.remote.host}
+    }
+}
+
+http://httpbin.localhost {
+    reverse_proxy http://envoy
+}
