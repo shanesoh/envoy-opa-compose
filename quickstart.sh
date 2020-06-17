@@ -23,6 +23,10 @@ echo "Trying the happy case - request is handled correctly"
 
 curl -H "Authorization: Bearer $token" -X GET -s http://httpbin.localhost/get
 
+echo "POST is not allowed - 403"
+
+curl -H "Authorization: Bearer $token" -X POST -s -o /dev/null -w "%{http_code}\n" http://httpbin.localhost/post
+
 echo "No access token - 401"
 
 curl -X GET -s -o /dev/null -w "%{http_code}\n" http://httpbin.localhost/
