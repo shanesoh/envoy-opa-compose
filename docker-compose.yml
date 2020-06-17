@@ -7,6 +7,7 @@ services:
     volumes:
       - ./envoy.yaml:/config/envoy.yaml
     environment:
+      - DEBUG_LEVEL=info
       - SERVICE_NAME=app
       - SERVICE_PORT=80
 
@@ -16,6 +17,7 @@ services:
       - ./policy.rego:/config/policy.rego
     command:
       - "run"
+      - "--log-level=debug"
       - "--server"
       - "--set=plugins.envoy_ext_authz_grpc.addr=:9191"
       - "--set=plugins.envoy_ext_authz_grpc.query=data.envoy.authz.allow"
