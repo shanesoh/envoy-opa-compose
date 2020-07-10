@@ -1,52 +1,11 @@
 version: "3.7"
 services:
-  caddy:
-    image: caddy:2.0.0-alpine
-    volumes:
-      - ./compose/caddy/Caddyfile:/tmp/Caddyfile:ro
-    ports:
-      - 80:80
-    entrypoint: caddy run --environ --adapter caddyfile --config /tmp/Caddyfile
-    networks:
-      default:
-        aliases:
-          - caddy.localhost
-          - keycloak.localhost
-          - httpbin.localhost
-
-  keycloak:
-    image: jboss/keycloak:10.0.1
-    depends_on:
-      - caddy
-    volumes:
-      - ./compose/keycloak/setup.sh:/setup.sh:ro
-      - ./compose/keycloak/start.sh:/start.sh:ro
-    environment:
-      DB_VENDOR: POSTGRES
-      DB_ADDR: keycloak-postgres
-      DB_DATABASE: keycloak
-      DB_USER: keycloak
-      DB_SCHEMA: public
-      DB_PASSWORD: password
-      KEYCLOAK_USER: admin
-      KEYCLOAK_PASSWORD: password
-      PROXY_ADDRESS_FORWARDING: "true"
-      KEYCLOAK_HOME: /opt/jboss/keycloak
-    entrypoint: /start.sh
-
-  keycloak-postgres:
-    image: postgres:12
-    volumes:
-      - keycloak-postgres:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: keycloak
-      POSTGRES_USER: keycloak
-      POSTGRES_PASSWORD: password
-
   envoy:
     image: envoyproxy/envoy:v1.14.2
+    ports:
+      - "8080:80"
     volumes:
-      - ./compose/envoy/envoy.yaml:/etc/envoy/envoy.yaml
+      - ./compose/envoy/envoy.yaml:/etc/envoy.yaml
 
   opa:
     image: openpolicyagent/opa:0.20.5-istio
@@ -64,19 +23,3 @@ services:
 
   httpbin:
     image: kennethreitz/httpbin:latest
-
-  # Will run to setup client and exit
-  setup-client:
-    build:
-      context: .
-      dockerfile: ./compose/client/Dockerfile
-    volumes:
-      - ./compose/client/:/tmp:ro
-    environment:
-      CLIENT_NAME: httpbin
-    entrypoint: /tmp/setup.sh read write
-    depends_on:
-      - keycloak
-
-volumes:
-  keycloak-postgres:
