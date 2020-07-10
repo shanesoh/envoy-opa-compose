@@ -41,8 +41,8 @@ static_resources:
       lb_policy: round_robin
       hosts:
         socket_address:
-          address: httpbin
-          port_value: 80
+          address: ${SERVICE_NAME}
+          port_value: ${SERVICE_PORT}
 
 admin:
   access_log_path: "/dev/null"
