@@ -8,8 +8,8 @@ instead of Kubernetes.
 
 This is meant for dockerized services (in a non-k8s environment) to easily leverage OPA for authorization.
 
-*Disclaimer: This example project was created when there was initially a lack of documentation on how to use the
-`ext_authz` filter with OPA. Specifically there was a lack of a sample project to run using docker-compose. There has
+*Disclaimer: This example project was initially created when there was lack of documentation on how to use the
+`ext_authz` filter with OPA. Specifically there was a lack of sample code to run using docker-compose. There has
 since been updated documentation and sample code in the [official
 docs](https://www.envoyproxy.io/docs/envoy/latest/start/sandboxes/ext_authz). Do check that out instead!*
 
