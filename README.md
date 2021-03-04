@@ -1,7 +1,7 @@
-# OPA Envoy proxy using docker-compose
+# Using Envoy external authorization with Open Policy Agent
 
-Using Envoy's external authorization filter with OPA as the authorization service to enforce security policies for all
-API requests received by Envoy.
+This project demonstrates how to use Envoy's external authorization filter with Open Policy Agent as the authorization
+service to enforce security policies for all API requests received by Envoy.
 
 Based on [this OPA tutorial](https://www.openpolicyagent.org/docs/latest/envoy-authorization/) using docker-compose
 instead of Kubernetes.
