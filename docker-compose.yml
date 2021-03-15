@@ -20,7 +20,7 @@ services:
       - "--log-level=debug"
       - "--log-format=json-pretty"
       - "--server"
-      - "--set=plugins.envoy_ext_authz_grpc.addr=:9191"
+      - "--set=plugins.envoy_ext_authz_grpc.path=envoy/authz/allow"  # default value
       - "--set=decision_logs.console=true"
       - "/config/policy.rego"
 
